@@ -7,5 +7,8 @@ class RandomAgent(Agent):
         super().__init__(player)
     
     def act(self, state, remaining_time):
+        print(state)
         actions = list(Game.actions(state))
+        print("Number of possible Actions: ", len(actions))
+        print("player is ", state.current_player)
         return random.choice(actions)

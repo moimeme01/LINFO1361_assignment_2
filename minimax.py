@@ -1,53 +1,49 @@
 from agent import Agent
-from oxono import Game, State
+from oxono import Game
 
 
-class AlphaBetaAgent(Agent):
-    def __init__(self, player, max_depth=10):
+class MinimaxAgent(Agent):
+    def __init__(self, player, max_depth=1000):
         super().__init__(player)
         self.max_depth = max_depth
 
-    def max_value(self, state, alpha, beta, depth):
-        v = -float('inf')
-        move = None
+    def max_value(self, state, depth):
+
         if Game.is_terminal(state) or depth==0:
             return (Game.utility(state, self.player), None)
         
-        
+        v = -float('inf')
+        move = None
+
         for a in Game.actions(state):
             inter_state = state.copy()
             Game.apply(inter_state, a)
-            v2, _ = self.min_value(inter_state, alpha, beta, depth-1)
+            v2, _ = self.min_value(inter_state, depth-1)
             if v2 > v:
                 v = v2
                 move = a 
-                alpha = max(alpha, v)
-            if v >= beta:
-                return (v, move)
         return (v, move)
 
     
-    def min_value(self, state, alpha, beta, depth):
-        v = float('inf')
-        move = None
+    def min_value(self, state, depth):
 
         if Game.is_terminal(state) or depth==0:
             return (Game.utility(state, self.player), None)
+        
+        v = float('inf')
+        move = None 
+
         for a in Game.actions(state):
             inter_state = state.copy()
             Game.apply(inter_state, a)
-            v2, _ = self.max_value(inter_state, alpha, beta, depth-1)
+            v2, _ = self.max_value(inter_state, depth-1)
             if v2 < v:
                 v = v2
                 move = a 
-                beta = min(beta, v)
-            if v <= alpha:
-                return (v, move)
-        
         return (v, move)
 
 
 
     def act(self, state, remaining_time):
-        _, move = self.max_value(state, -float('inf'), float('inf'), 6)
+        _, move = self.max_value(state, self.max_depth)
         return move
